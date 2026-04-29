@@ -1,0 +1,230 @@
+# NHS Jobs Search — Functional Acceptance Test Suite
+
+**Candidate:** [Applicant Name]
+**Repository:** `[Applicant Name]-NHSBSA`
+**Tech Stack:** Java 21 · Selenium 4 · Cucumber 7 · JUnit 5 · Maven · WebDriverManager
+
+---
+
+## Overview
+
+BDD functional acceptance test suite for the NHS Jobs candidate search page:
+`https://www.jobs.nhs.uk/candidate/search`
+
+Tests are written in Gherkin from the user's perspective and cover:
+- Happy path searches (keyword, location, combinations)
+- Sorting results by "Date posted (newest first)"
+- Pagination
+- Edge cases (empty search, special characters, no results)
+- Result card content validation (title, employer, closing date)
+- Cross-browser execution (Chrome & Firefox)
+
+---
+
+## Prerequisites
+
+| Requirement | Version |
+|-------------|---------|
+| Java JDK    | 21+     |
+| Maven       | 3.8+    |
+| Chrome      | Latest  |
+| Firefox     | Latest  |
+
+> **No manual driver download required.**
+> [WebDriverManager](https://github.com/bonigarcia/webdrivermanager) automatically resolves,
+> downloads, and caches the correct browser driver at runtime.
+
+---
+
+## Quick Start
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/[ApplicantName]/[ApplicantName]-NHSBSA.git
+cd [ApplicantName]-NHSBSA
+```
+
+### 2. Run all tests (Chrome, headed)
+
+```bash
+mvn test
+```
+
+---
+
+## Command Line Execution
+
+### Run all tests
+
+```bash
+mvn test
+```
+
+### Run on Firefox
+
+```bash
+mvn test -Dbrowser=firefox
+```
+
+### Run on Chrome (explicit)
+
+```bash
+mvn test -Dbrowser=chrome
+```
+
+### Run headless (CI/CD environments)
+
+```bash
+mvn test -Dheadless=true
+```
+
+### Run headless on Firefox
+
+```bash
+mvn test -Dbrowser=firefox -Dheadless=true
+```
+
+### Run only Smoke tests
+
+```bash
+mvn test -Dcucumber.tags="@Smoke"
+```
+
+### Run only Happy Path tests
+
+```bash
+mvn test -Dcucumber.tags="@HappyPath"
+```
+
+### Run sort-related tests only
+
+```bash
+mvn test -Dcucumber.tags="@SortOrder"
+```
+
+### Run all tests on both browsers (sequentially)
+
+```bash
+mvn test -Dbrowser=chrome && mvn test -Dbrowser=firefox
+```
+
+### Full CI pipeline command
+
+```bash
+mvn clean test -Dbrowser=chrome -Dheadless=true
+```
+
+---
+
+## Available System Properties
+
+| Property            | Default | Description                          |
+|---------------------|---------|--------------------------------------|
+| `browser`           | `chrome`| Browser to use: `chrome` or `firefox`|
+| `headless`          | `false` | Run browser in headless mode         |
+| `cucumber.tags`     | *(all)* | Cucumber tag filter expression       |
+| `baseUrl`           | NHS URL | Override the base URL                |
+
+---
+
+## Tag Reference
+
+| Tag              | Description                                      |
+|------------------|--------------------------------------------------|
+| `@Smoke`         | Critical happy-path tests for quick validation   |
+| `@HappyPath`     | All positive/expected outcome scenarios          |
+| `@SortOrder`     | Tests validating date-posted sort functionality  |
+| `@Filters`       | Tests using search filters and parameters        |
+| `@Pagination`    | Tests navigating multiple result pages           |
+| `@EdgeCase`      | Boundary and negative test scenarios             |
+| `@NoResults`     | Tests expecting no results message               |
+| `@ResultDetails` | Tests validating content of job result cards     |
+| `@DateValidation`| Tests verifying date ordering accuracy           |
+| `@Chrome`        | Chrome-specific scenarios                        |
+| `@Firefox`       | Firefox-specific scenarios                       |
+
+---
+
+## Project Structure
+
+```
+nhs-jobs-test-suite/
+├── pom.xml                                          # Maven build config
+├── README.md
+└── src/test/
+    ├── java/uk/nhs/jobs/
+    │   ├── RunCucumberTest.java                     # JUnit 5 Suite runner
+    │   ├── config/
+    │   │   └── ConfigReader.java                    # System property reader
+    │   ├── hooks/
+    │   │   └── Hooks.java                           # Before/After scenario hooks
+    │   ├── pages/
+    │   │   ├── BasePage.java                        # Shared Selenium helpers (POM base)
+    │   │   ├── SearchPage.java                      # Search form page object
+    │   │   ├── SearchResultsPage.java               # Results listing page object
+    │   │   └── JobDetailPage.java                   # Job detail page object
+    │   ├── steps/
+    │   │   └── SearchSteps.java                     # Cucumber step definitions
+    │   └── utils/
+    │       └── DriverFactory.java                   # WebDriver lifecycle manager
+    └── resources/
+        ├── features/
+        │   └── NHSJobsSearch.feature                # BDD Gherkin feature file
+        └── logback-test.xml                         # Logging configuration
+```
+
+---
+
+## Reports
+
+After running tests, HTML and JSON reports are generated at:
+
+```
+target/cucumber-reports/cucumber-report.html   ← Human-readable HTML report
+target/cucumber-reports/cucumber-report.json   ← Machine-readable JSON
+target/test-logs/nhs-jobs-tests.log            ← Execution log
+```
+
+Open the HTML report in a browser:
+```bash
+open target/cucumber-reports/cucumber-report.html   # macOS
+start target/cucumber-reports/cucumber-report.html  # Windows
+```
+
+---
+
+## Design Decisions
+
+### Why WebDriverManager?
+Satisfies the requirement: *"tests must not run from downloaded or machine-based drivers."*
+WDM resolves, downloads, and caches the correct `chromedriver`/`geckodriver` at runtime.
+
+### Why Page Object Model?
+- Separates test logic from page interaction code
+- Single point of change when the UI changes
+- Promotes reuse across scenarios
+
+### Locator Strategy Priority
+1. **ID** — fastest, most reliable (`By.id`)
+2. **Name** — stable on form elements (`By.name`)
+3. **CSS Selector** — performant, readable (`By.cssSelector`)
+4. **ARIA/data attributes** — accessibility-aligned, resilient to visual changes
+5. **XPath** — only when CSS cannot express the relationship
+
+---
+
+## Troubleshooting
+
+**Tests fail with `NoSuchElementException`**
+The NHS Jobs website may have changed its HTML structure. Update the locators in the relevant Page Object class.
+
+**`WebDriverException: Chrome not reachable`**
+Ensure Chrome/Firefox is installed. WDM will download the matching driver automatically.
+
+**Tests time out**
+Add `-Dheadless=true` for faster execution, or increase wait timeouts in `BasePage.java`.
+
+**Access denied / 403 errors from NHS website**
+The site may block automated requests. Try running without headless mode:
+`mvn test -Dheadless=false`
