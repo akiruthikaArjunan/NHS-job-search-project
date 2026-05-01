@@ -129,4 +129,6 @@ public abstract class BasePage {
     protected void waitForUrlContaining(String urlFragment) {
         wait.until(ExpectedConditions.urlContains(urlFragment));
     }
+
+    //public abstract boolean areDatesInDescendingOrder();
 }

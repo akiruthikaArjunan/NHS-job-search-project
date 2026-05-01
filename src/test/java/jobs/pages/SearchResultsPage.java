@@ -49,6 +49,9 @@ public class SearchResultsPage extends BasePage {
             "h2 a, h3 a, .nhsuk-card__heading a, [data-test='job-title']");*/
     private By JOB_TITLE = By.cssSelector(".nhsuk-card__heading a");
     /** Employer / organisation name within a result card */
+
+    private static final By JOB_TITLE1 =
+            By.cssSelector("[data-test='search-result-job-title']");
     private static final By EMPLOYER_NAME = By.cssSelector(
             "[data-test='employer-name'], .nhsuk-body-s, .employer-name, " +
                     "p:first-of-type, dl dd:first-of-type");
@@ -65,9 +68,9 @@ public class SearchResultsPage extends BasePage {
     private static final By POSTED_DATE = By.cssSelector(
             "[data-test='posted-date'], .posted-date, .nhsuk-body-s");
 
-    private static final By POSTED_DATE_FLEX = By.xpath(
+   /* private static final By POSTED_DATE_FLEX = By.xpath(
             ".//*[contains(normalize-space(),'Posted') or contains(normalize-space(),'Date posted')]"
-    );
+    );*/
     /** Sort dropdown */
     private static final By SORT_DROPDOWN = By.cssSelector(
             "select[name='sortBy'], select[name='sort'], select[id='sort'], " +
@@ -205,7 +208,7 @@ public class SearchResultsPage extends BasePage {
         for (WebElement card : cards) {
 
             // Title check
-            List<WebElement> titles = card.findElements(JOB_TITLE);
+            List<WebElement> titles = card.findElements(JOB_TITLE1);
             boolean titleMissing = titles.isEmpty() ||
                     titles.stream().allMatch(e -> e.getText().isBlank());
 
