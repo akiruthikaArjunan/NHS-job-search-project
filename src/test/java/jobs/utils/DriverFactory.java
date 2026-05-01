@@ -28,7 +28,7 @@ public class DriverFactory {
     private static final int PAGE_LOAD_TIMEOUT_SECONDS = 30;
 
     private DriverFactory() {
-        // Utility class - prevent instantiation
+        // Utility class - prevent instantiation (not create the object)
     }
 
     /**

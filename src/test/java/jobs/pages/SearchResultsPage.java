@@ -400,7 +400,7 @@ public class SearchResultsPage extends BasePage {
 
             String text = el.getText().trim();
 
-            // ✅ extract only actual date using regex
+            // extract only actual date using regex
             Matcher matcher = Pattern.compile("(\\d{1,2}\\s+[A-Za-z]+\\s+\\d{4})")
                     .matcher(text);
 
@@ -520,7 +520,26 @@ public class SearchResultsPage extends BasePage {
             return "";
         }
     }
+    public boolean areDatesSortedDescending() {
 
+        List<WebElement> elements = driver.findElements(
+                By.cssSelector("[data-test='search-result-publicationDate'] strong")
+        );
+
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.UK);
+
+        for (int i = 0; i < elements.size() - 1; i++) {
+            LocalDate d1 = LocalDate.parse(elements.get(i).getText().trim(), formatter);
+            LocalDate d2 = LocalDate.parse(elements.get(i + 1).getText().trim(), formatter);
+
+            if (d1.isBefore(d2)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
     /**
      * Attempts to parse date text from WebElements using common UK date formats.
      */
@@ -555,3 +574,5 @@ public class SearchResultsPage extends BasePage {
         return dates;
     }
 }
+
+

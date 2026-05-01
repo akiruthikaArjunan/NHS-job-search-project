@@ -28,7 +28,7 @@ Feature: NHS Jobs Search Functionality
     And I submit the search
     Then I should see a list of job results
     When I sort the results by "Date Posted (newest)"
-    Then the results should be ordered with the newest date first
+    Then the job results should be sorted by "Date Posted" in "descending" order
 
   @HappyPath @SortOrder
   Scenario: Default search results can be re-sorted by newest date
@@ -37,7 +37,8 @@ Feature: NHS Jobs Search Functionality
     Then I should see a list of job results
     And I should have the option to sort results
     When I sort the results by "Date Posted (newest)"
-    Then the results should be ordered with the newest date first
+    Then the job results should be sorted by "Date Posted" in "descending" order
+
 
   @HappyPath @Filters
   Scenario Outline: Search for jobs with different job type keywords
@@ -117,7 +118,7 @@ Feature: NHS Jobs Search Functionality
     Then I should see a list of job results
     When I sort the results by "Date Posted (newest)"
     Then each job result should display a posted date
-    And the dates should be in descending order (newest)
+    Then the job results should be sorted by "Date Posted" in "descending" order
 
   @Chrome
   Scenario: Search functionality works correctly in Chrome

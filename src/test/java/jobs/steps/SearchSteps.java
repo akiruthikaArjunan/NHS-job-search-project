@@ -1,5 +1,5 @@
 package jobs.steps;
-
+import org.junit.jupiter.api.Assertions;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -22,7 +22,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -293,6 +298,31 @@ public class SearchSteps {
                 .as("Job results should be sorted newest first")
                 .isTrue();
     }
+
+    @Then("the job results should be sorted by {string} in {string} order")
+    public void verifySorted(String field, String order) {
+
+        Assertions.assertTrue(resultsPage.areDatesSortedDescending());
+    }
+
+    /*@Then("the job results should be sorted by {string} in {string} order")
+    public void verifySorted(String field, String order) {
+
+        List<WebElement> elements = driver.findElements(
+                By.cssSelector("[data-test='search-result-publicationDate'] strong")
+        );
+
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.UK);
+
+        for (int i = 0; i < elements.size() - 1; i++) {
+            LocalDate d1 = LocalDate.parse(elements.get(i).getText().trim(), formatter);
+            LocalDate d2 = LocalDate.parse(elements.get(i + 1).getText().trim(), formatter);
+            System.out.println("Comparing: " + d1 + " >= " + d2);
+            Assertions.assertTrue(!d1.isBefore(d2)); // newest first
+        }
+    }*/
+
 
     @Then("the search results page should load completely")
     public void theSearchResultsPageShouldLoadCompletely() {
